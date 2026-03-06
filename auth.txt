@@ -1,0 +1,10 @@
+password = input()
+password_repeat = input()
+def submit_auth():
+    if password == password_repeat:
+        Settings.set_password(password)
+        redirect(main)
+    else:
+        message("Не верно заполнено поле 'Повторите пароль'")
+
+    

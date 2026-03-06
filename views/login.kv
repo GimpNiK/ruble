@@ -1,0 +1,44 @@
+# login_screen.kv
+<LoginScreen>:
+    name: 'login'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(40)
+        spacing: dp(20)
+        canvas.before:
+            Color:
+                rgba: 0.2, 0.8, 0.2, 1  # зеленый фон
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        
+        # Логотип
+        Label:
+            text: 'Рублик'
+            font_size: sp(48)
+            bold: True
+            color: 0.2, 0.6, 1, 1
+            size_hint_y: 0.3
+        
+        # Поле для PIN
+        TextInput:
+            id: pin_input
+            hint_text: 'Введите PIN-код'
+            password: True
+            multiline: False
+            input_filter: 'int'
+            max_text_length: 4
+            size_hint_y: 0.15
+            halign: 'center'
+            font_size: sp(24)
+        
+        # Кнопка входа
+        Button:
+            text: 'Войти'
+            size_hint_y: 0.15
+            on_press: 
+                if root.check_pin(pin_input.text): \
+                print('Успешный вход')
+        
+        

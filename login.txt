@@ -1,0 +1,6 @@
+password = input()
+if Settings.check_password(password):
+    redirect(main)
+else:
+    message("У вас неверный пароль. Повторите попытку")
+    
