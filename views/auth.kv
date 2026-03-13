@@ -1,0 +1,32 @@
+#:kivy 2.3.1
+<AuthScreen@Screen>:
+    name: 'AuthScreen'
+    
+    BoxLayout:
+        orientation: 'vertical'
+        
+        Label:
+            text: 'Введите PIN-код(4 цифры)'
+        
+        TextInput:
+            id: password
+            password: True
+            multiline: False
+            input_filter: 'int'
+            max_text_length: 4
+        Label:
+            text: 'Повторите PIN-код'
+        TextInput:
+            id: password_repeat
+            password: True
+            multiline: False
+            input_filter: 'int'
+            max_text_length: 4
+        Label:
+            id: message 
+            text: ''  
+        Button:
+            text: 'Зарегистрироваться'
+            on_press: 
+                if password.text == password_repeat.text: root.register()
+                else: message.text = "Не верно заполнено поле 'Повторите пароль'"

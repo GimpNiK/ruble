@@ -1,89 +1,69 @@
-# main.kv
-<MainScreen>:
-    name: 'main'
-    
+#:kivy 2.3.1
+
+<MainScreen@Screen>:
+    name: 'MainScreen'
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(20)
-        spacing: dp(10)
-        
-        # Верхняя панель
         BoxLayout:
-            size_hint_y: 0.1
+            orientation: 'horizontal'
             Label:
-                text: '🏠 Главная'
-                font_size: sp(24)
-                bold: True
-            Button:
-                text: '🚪'
-                size_hint_x: 0.15
-                font_size: sp(24)
-                on_press: root.manager.current = 'login'
-        
-        # Баланс
+                text: "Баланс:"
+            Label:
+                id: balance
         BoxLayout:
-            size_hint_y: 0.2
+            orientation: 'horizontal'
+            Label:
+                text: "Прибыль за месяц:"
+            Label:
+                id: monthly_profit
+        BoxLayout:
             orientation: 'vertical'
             Label:
-                text: 'Текущий баланс'
-                font_size: sp(18)
-            Label:
-                id: balance_label
-                text: '125 430 ₽'
-                font_size: sp(48)
-                bold: True
-                color: 0.2, 0.8, 0.2, 1
-        
-        # Кнопки действий
+                text: "Уведомления об оплате счетов: "
+            BoxLayout:
+                id: notifications
         BoxLayout:
-            size_hint_y: 0.15
-            spacing: dp(10)
-            Button:
-                text: '➕ Доход'
-                background_color: 0.2, 0.8, 0.2, 1
-                on_press: print('Добавить доход')
-            Button:
-                text: '➖ Расход'
-                background_color: 0.8, 0.2, 0.2, 1
-                on_press: print('Добавить расход')
-        
-        # Последние операции
+            orientation: 'vertical'
+            Label:
+                text: "История транзакций: "
+            BoxLayout:
+                id: transactions
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: "Постоянные переводы: "
+            BoxLayout:
+                id: regular_transactions
+        BoxLayout:
+            orientation: 'horizontal'
+            Label:
+                text: "Дата начала:"
+            Label:
+                id: start_date
+            Label:
+                text: "Дата конца:"
+            Label:
+                id: end_date
         Label:
-            text: 'Последние операции'
-            size_hint_y: 0.05
-        
-        # Список (пример)
-        BoxLayout:
-            size_hint_y: 0.4
-            orientation: 'vertical'
-            spacing: dp(5)
-            
-            # Элемент списка
-            BoxLayout:
-                size_hint_y: None
-                height: dp(40)
-                Label:
-                    text: '🍔 Продукты'
-                    halign: 'left'
-                Label:
-                    text: '-1 250 ₽'
-                    color: 0.8, 0.2, 0.2, 1
-                    halign: 'right'
-            
-            BoxLayout:
-                size_hint_y: None
-                height: dp(40)
-                Label:
-                    text: '💼 Зарплата'
-                    halign: 'left'
-                Label:
-                    text: '+45 000 ₽'
-                    color: 0.2, 0.8, 0.2, 1
-                    halign: 'right'
-        
-        # Кнопка перехода к отчетам
-        Button:
-            text: '📊 Отчеты'
-            background_color: 0.5, 0.5, 0.5, 1
-            size_hint_y: 0.1
-            on_press: root.manager.current = 'reports'
+            text: "График линейный прибыли и трат"
+        Label:
+            text: "Столбчатая диаграмма трат по категориям"
+
+<NotificationItem@BoxLayout>:
+    orientation: 'horizontal'
+    Label:
+        id: date
+    Label:
+        id: sum
+    Label:
+        id: descr
+
+# Баланс
+# Прибыль за месяц
+# Уведомления(требования постоянных платежей за 3 дня по умолчанию  проходит)
+# История транзакций
+#     +- обычная транзакция(5 пунктов сумма и описание возможность раскрытия и пролистывания)
+#     +- постоянные переводы(уведомления 5пунктов сумма и описание возможность раскрытия и пролистывания)
+# Дата начала и конца по умолчанию последний месяц
+# График линейный прибыли и трат
+# Столбчатая диаграмма трат по категориям

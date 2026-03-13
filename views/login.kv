@@ -1,44 +1,35 @@
-# login_screen.kv
-<LoginScreen>:
-    name: 'login'
+#:kivy 2.3.1
+#:import check_password models.check_password
+<LoginScreen@Screen>:
+    name: 'LoginScreen'
     
     BoxLayout:
         orientation: 'vertical'
-        padding: dp(40)
-        spacing: dp(20)
-        canvas.before:
-            Color:
-                rgba: 0.2, 0.8, 0.2, 1  # зеленый фон
-            Rectangle:
-                size: self.size
-                pos: self.pos
+        #padding: dp(40)
+        #spacing: dp(20)
+        # canvas.before:
+        #     Color:
+        #         rgba: 0.2, 0.8, 0.2, 1  # зеленый фон
+        #     Rectangle:
+        #         size: self.size
+        #         pos: self.pos
         
-        # Логотип
         Label:
-            text: 'Рублик'
-            font_size: sp(48)
-            bold: True
-            color: 0.2, 0.6, 1, 1
-            size_hint_y: 0.3
+            text: 'Введите PIN-код'
         
-        # Поле для PIN
         TextInput:
-            id: pin_input
-            hint_text: 'Введите PIN-код'
+            id: password
             password: True
             multiline: False
             input_filter: 'int'
             max_text_length: 4
-            size_hint_y: 0.15
-            halign: 'center'
-            font_size: sp(24)
-        
-        # Кнопка входа
+        Label:
+            id: message 
+            text: ''  
         Button:
             text: 'Войти'
-            size_hint_y: 0.15
             on_press: 
-                if root.check_pin(pin_input.text): \
-                print('Успешный вход')
+                if check_password(password.text): root.manager.current = 'MainScreen'
+                else: message.text = "У вас неверный пароль. Повторите попытку"
         
         
