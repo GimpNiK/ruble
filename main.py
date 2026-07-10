@@ -1,3 +1,4 @@
+from kivy.uix.actionbar import BoxLayout
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.lang import Builder
@@ -5,27 +6,101 @@ import os
 from models import *
 
 # Загружаем все KV файлы
-for kv_file in ['views/auth.kv','views/login.kv','views/main.kv']:  # Убедитесь что путь правильный
+for kv_file in ['views/auth.kv','views/login.kv','views/main.kv','views/css.kv']:  # Убедитесь что путь правильный
     if os.path.exists(kv_file):
         Builder.load_file(kv_file)
 
 
 class LoginScreen(Screen):
     def on_enter(self):
-        App.get_running_app().title = "Вход в систему"
+        App.get_running_app().title = "Вход в систему" # type: ignore
 class AuthScreen(Screen):
     def on_enter(self):
-        App.get_running_app().title = "Регистрация"
+        App.get_running_app().title = "Регистрация" # type: ignore
     def register(self):
         set_password(self.ids.password.text)
         self.manager.current = 'MainScreen'
 
 class MainScreen(Screen):
     def on_enter(self):
-        App.get_running_app().title = "Главная"
+        App.get_running_app().title = "Главная" # type: ignore
         self.ids.balance.text = str(get_balance())
         self.ids.monthly_profit.text = str(get_monthly_profit())
 
+        self.load_notifications(5)
+        #self.load_transactions(5)
+        #self.load_regular_transactions(5)
+
+    def load_notifications(self,number = -1):
+        self.ids.notifications.clear_widgets()
+        notifications = db.query(Notification.id,
+                                 Notification.date,
+                                 Notification.sum,
+                                 Notification.descr).limit(number)
+        
+        for n in notifications:
+            self.ids.notifications.add_widget(NotificationItem(*n))
+    
+    def load_transactions(self,number = -1):
+        self.ids.transactions.clear_widgets()
+        notifications = db.query(Notification.id,
+                                 Notification.date,
+                                 Notification.sum,
+                                 Notification.descr).limit(number)
+        
+        for n in notifications:
+            self.ids.transactions.add_widget(NotificationItem(*n))
+    
+    def load_regular_transactions(self,number = -1):
+        self.ids.regular_transactions.clear_widgets()
+        notifications = db.query(Notification.id,
+                                 Notification.date,
+                                 Notification.sum,
+                                 Notification.descr).limit(number)
+        
+        for n in notifications:
+            self.ids.regular_transactions.add_widget(NotificationItem(*n))
+
+
+class NotificationItem(BoxLayout):
+    def __init__(self,id,date,sum,descr):
+        self.id = id
+
+        self.ids.date = date
+        self.ids.sum = sum
+        self.ids.descr = descr
+
+        self.ids.delete.on_press = self.delete()
+    def delete(self):
+        notification = db.query(Notification).get(self.id)
+        db.delete(notification)
+        db.commit()
+class TransactionItem(BoxLayout):
+    def __init__(self,id,date,sum,descr):
+        self.id = id
+
+        self.ids.date = date
+        self.ids.sum = sum
+        self.ids.descr = descr
+
+        self.ids.delete.on_press = self.delete()
+    def delete(self):
+        notification = db.query(Notification).get(self.id)
+        db.delete(notification)
+        db.commit()
+
+class RegularTransactionItem(BoxLayout):
+    def __init__(self,id,date,sum,descr):
+        self.id = id
+
+        self.ids.date = date
+        self.ids.sum = sum
+        self.ids.descr = descr
+
+        self.ids.delete.on_press = self.delete()
+    def delete(self):
+        notification = db.query(Notification).get(self.id)
+        db.delete(notification)
 
 class MainApp(App):
     def build(self):
@@ -36,7 +111,8 @@ class MainApp(App):
         sm.add_widget(AuthScreen(name='AuthScreen'))
         sm.add_widget(LoginScreen(name='LoginScreen'))
         sm.add_widget(MainScreen(name= 'MainScreen'))
-
+        
+        
         if is_registered():
             sm.current = 'LoginScreen'
         else:

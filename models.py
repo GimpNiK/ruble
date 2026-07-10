@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime,timedelta
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime, ForeignKey, Text, Enum, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -112,12 +112,19 @@ class RegularTransaction(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Text(1024))
     format_period = Column(Enum(FormatPeriod))
-    start_date = Column(Integer)
+    start_date = Column(DateTime, default = datetime.now())
+    start_date_num = Column(Integer)
     numdays =Column(Integer)
     sum = Column(Float, nullable=False)
-    category_id = Column(Integer, ForeignKey('categories.id'))
     category = relationship("Category")
 
+    category_id = Column(Integer, ForeignKey('categories.id'))
+
+    def get_foreign_date(self):
+        if self.format_period == FormatPeriod.CUSTOM:
+            delta = datetime.now() - self.start_date
+            return self.start_date + self.numdays
+        elif 
     def run(self):
         session = Session()
         transaction = Transaction(
@@ -133,9 +140,9 @@ class RegularTransaction(Base):
 class Notification(Base):
     __tablename__ = 'notifications'
     id = Column(Integer, primary_key=True)
-    reg_transaction_id = Column(Integer, ForeignKey('regular_transactions.id'))  
-    reg_transaction = relationship("RegularTransaction")
-
+    date = Column(DateTime)
+    sum = Column(Float, nullable=False)
+    descr = Column(Text(1024))
 
 
 def create_database(db_path='sqlite:///finance.db', drop_existing=True):
@@ -166,17 +173,4 @@ def get_monthly_profit():
         Transaction.date >= first_day
     ).scalar()
     return result if result is not None else 0
-#     def when_run(self):
-        
-# 
-# def get_categories():
-#     session = Session()
-#     categories = session.query(Category).all()
-#     return {c.id:c.name for c in categories}
-# def get_transactins():
-#     session = Session()
-#     categories = session.query(Transaction).all()
-#     return {c.id:{"id":c.id,"" for c in categories}
-# def create_transaction():
-#     ...
-# def create
+

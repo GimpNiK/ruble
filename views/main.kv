@@ -3,37 +3,45 @@
 <MainScreen@Screen>:
     name: 'MainScreen'
     BoxLayout:
-        orientation: 'vertical'
         BoxLayout:
             orientation: 'horizontal'
             Label:
                 text: "Баланс:"
             Label:
                 id: balance
+
         BoxLayout:
             orientation: 'horizontal'
             Label:
                 text: "Прибыль за месяц:"
             Label:
                 id: monthly_profit
+
+
+        Label:
+            text: "Уведомления об оплате счетов: "
         BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: "Уведомления об оплате счетов: "
+            Button:
+                text:"Добавить"
+                on_press: 
             BoxLayout:
                 id: notifications
+
+
+        Label:
+            text: "История транзакций: "
         BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: "История транзакций: "
             BoxLayout:
                 id: transactions
+
+
+        Label:
+            text: "Постоянные переводы: "        
         BoxLayout:
-            orientation: 'vertical'
-            Label:
-                text: "Постоянные переводы: "
             BoxLayout:
                 id: regular_transactions
+
+
         BoxLayout:
             orientation: 'horizontal'
             Label:
@@ -57,6 +65,10 @@
         id: sum
     Label:
         id: descr
+    Button:
+        id: delete
+        text: "Удалить"
+
 
 # Баланс
 # Прибыль за месяц
