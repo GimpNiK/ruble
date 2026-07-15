@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Сервис для сборки APK
+  build:
+    image: kivy/buildozer:latest
+    container_name: ruble_builder
+    volumes:
+      - buildozer-cache:/home/user/.buildozer
+      - .:/home/user/hostcwd
+    environment:
+      - BUILD_NUM_THREADS=8
+      - P4A_PARALLEL_BUILD=8
+      - GRADLE_OPTS=-Xmx8g -Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.jvmargs=-Xmx8g -Dorg.gradle.workers.max=8
+      - JAVA_OPTS=-Xmx8g
+      - BUILDOZER_ALLOW_ROOT=1
+    command: -v android debug --log-level=4 --parallel-build=8
+    stdin_open: true
+    tty: true
+
+  # Сервис для тестирования (опционально)
+  test:
+    image: python:3.11-slim
+    container_name: ruble_test
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: >
+      bash -c "pip install --quiet pytest pytest-cov &&
+               if [ -d tests ]; then python -m pytest tests/ -v --tb=short; else echo 'No tests found'; fi"
+    profiles:
+      - test
+
+volumes:
+  buildozer-cache:
+    name: buildozer_cache

@@ -1,81 +1,325 @@
 #:kivy 2.3.1
+#:import ChartImage charts.ChartImage
+#:import PieChart charts.PieChart
+
+<ListItem@BoxLayout>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(50)
+    spacing: dp(4)
+    padding: dp(4), dp(2)
+    Label:
+        id: date_label
+        size_hint_x: 0.22
+        font_size: sp(13)
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+    Label:
+        id: sum_label
+        size_hint_x: 0.22
+        font_size: sp(13)
+        bold: True
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+    Label:
+        id: descr_label
+        size_hint_x: 0.46
+        font_size: sp(13)
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+        shorten: True
+        shorten_from: 'right'
+    Button:
+        id: delete_btn
+        size_hint_x: 0.1
+        text: 'Х'
+        font_size: sp(18)
+        background_color: 0.85, 0.25, 0.25, 1
+
+<GoalItem@BoxLayout>:
+    orientation: 'vertical'
+    size_hint_y: None
+    height: dp(70)
+    padding: dp(8)
+    spacing: dp(2)
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.95, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Label:
+        id: name_label
+        font_size: sp(15)
+        bold: True
+        size_hint_y: None
+        height: dp(22)
+    Label:
+        id: progress_label
+        font_size: sp(13)
+        size_hint_y: None
+        height: dp(20)
+    Label:
+        id: deadline_label
+        font_size: sp(12)
+        color: 0.4, 0.4, 0.4, 1
+        size_hint_y: None
+        height: dp(18)
 
 <MainScreen@Screen>:
     name: 'MainScreen'
-    BoxLayout:
+    ScrollView:
+        do_scroll_x: False
         BoxLayout:
-            orientation: 'horizontal'
-            Label:
-                text: "Баланс:"
-            Label:
-                id: balance
+            orientation: 'vertical'
+            size_hint_y: None
+            height: self.minimum_height
+            padding: dp(16)
+            spacing: dp(12)
 
-        BoxLayout:
-            orientation: 'horizontal'
             Label:
-                text: "Прибыль за месяц:"
+                text: 'Ruble — учёт личных финансов'
+                font_size: sp(24)
+                bold: True
+                size_hint_y: None
+                height: dp(44)
+                color: 0.15, 0.35, 0.65, 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+                padding: dp(8)
+                canvas.before:
+                    Color:
+                        rgba: 0.9, 0.95, 1, 1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                Label:
+                    text: 'Баланс:'
+                    bold: True
+                    font_size: sp(16)
+                Label:
+                    id: balance
+                    bold: True
+                    font_size: sp(16)
+                    color: 0.1, 0.5, 0.2, 1
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(44)
+                spacing: dp(10)
+                padding: dp(4)
+                Label:
+                    text: 'Прибыль за месяц:'
+                    font_size: sp(15)
+                Label:
+                    id: monthly_profit
+                    font_size: sp(15)
+
             Label:
-                id: monthly_profit
-
-
-        Label:
-            text: "Уведомления об оплате счетов: "
-        BoxLayout:
-            Button:
-                text:"Добавить"
-                on_press: 
+                text: 'Напоминания о платежах'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
             BoxLayout:
                 id: notifications
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
 
-
-        Label:
-            text: "История транзакций: "
-        BoxLayout:
+            Label:
+                text: 'История транзакций'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
+            BoxLayout:
+                size_hint_y: None
+                height: dp(48)
+                spacing: dp(10)
+                padding: dp(4)
+                Button:
+                    text: '+ Транзакция'
+                    font_size: sp(15)
+                    size_hint_x: 0.35
+                    on_press: root.open_transaction_popup()
+                Button:
+                    text: '<'
+                    font_size: sp(20)
+                    size_hint_x: None
+                    width: dp(50)
+                    on_press: root.load_transactions(-1)
+                Label:
+                    id: tx_page_label
+                    text: '0 из 0'
+                    font_size: sp(14)
+                    size_hint_x: 0.4
+                Button:
+                    text: '>'
+                    font_size: sp(20)
+                    size_hint_x: None
+                    width: dp(50)
+                    on_press: root.load_transactions(1)
             BoxLayout:
                 id: transactions
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
 
-
-        Label:
-            text: "Постоянные переводы: "        
-        BoxLayout:
+            Label:
+                text: 'Постоянные платежи'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
+            BoxLayout:
+                size_hint_y: None
+                height: dp(48)
+                spacing: dp(10)
+                padding: dp(4)
+                Button:
+                    text: '+ Постоянный платёж'
+                    font_size: sp(15)
+                    size_hint_x: 0.35
+                    on_press: root.open_regular_popup()
+                Button:
+                    text: '<'
+                    font_size: sp(20)
+                    size_hint_x: None
+                    width: dp(50)
+                    on_press: root.load_regular_transactions(-1)
+                Label:
+                    id: reg_page_label
+                    text: '0 из 0'
+                    font_size: sp(14)
+                    size_hint_x: 0.4
+                Button:
+                    text: '>'
+                    font_size: sp(20)
+                    size_hint_x: None
+                    width: dp(50)
+                    on_press: root.load_regular_transactions(1)
             BoxLayout:
                 id: regular_transactions
+                orientation: 'vertical'
+                size_hint_y: None
+                height: self.minimum_height
 
+            # Label:
+            #     text: 'Финансовые цели'
+            #     bold: True
+            #     size_hint_y: None
+            #     height: dp(34)
+            #     font_size: sp(16)
+            # Button:
+            #     text: '+ Цель'
+            #     font_size: sp(15)
+            #     size_hint_y: None
+            #     height: dp(44)
+            #     on_press: root.open_goal_popup()
+            # BoxLayout:
+            #     id: goals
+            #     orientation: 'vertical'
+            #     size_hint_y: None
+            #     height: self.minimum_height
 
-        BoxLayout:
-            orientation: 'horizontal'
             Label:
-                text: "Дата начала:"
-            Label:
-                id: start_date
-            Label:
-                text: "Дата конца:"
-            Label:
-                id: end_date
-        Label:
-            text: "График линейный прибыли и трат"
-        Label:
-            text: "Столбчатая диаграмма трат по категориям"
+                text: 'Период анализа'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
+            BoxLayout:
+                size_hint_y: None
+                height: dp(48)
+                spacing: dp(8)
+                padding: dp(4)
+                Label:
+                    text: 'С:'
+                    font_size: sp(15)
+                    size_hint_x: None
+                    width: dp(30)
+                TextInput:
+                    id: start_date_input
+                    multiline: False
+                    hint_text: 'ДД.ММ.ГГГГ'
+                    font_size: sp(16)
+                    height: dp(40)
+                    size_hint_y: None
+                Label:
+                    text: 'По:'
+                    font_size: sp(15)
+                    size_hint_x: None
+                    width: dp(35)
+                TextInput:
+                    id: end_date_input
+                    multiline: False
+                    hint_text: 'ДД.ММ.ГГГГ'
+                    font_size: sp(16)
+                    height: dp(40)
+                    size_hint_y: None
+            BoxLayout:
+                size_hint_y: None
+                height: dp(44)
+                spacing: dp(10)
+                padding: dp(4)
+                Button:
+                    text: 'Применить'
+                    font_size: sp(15)
+                    on_press: root.apply_period()
+                Button:
+                    text: 'Последний месяц'
+                    font_size: sp(15)
+                    on_press: root.reset_period()
 
-<NotificationItem@BoxLayout>:
-    orientation: 'horizontal'
-    Label:
-        id: date
-    Label:
-        id: sum
-    Label:
-        id: descr
-    Button:
-        id: delete
-        text: "Удалить"
+            # ============================================================
+            # ГРАФИК 1: Круговая диаграмма (сначала)
+            # ============================================================
+            Label:
+                text: 'Расходы по категориям'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
 
+            BoxLayout:
+                size_hint_y: None
+                height: 300
+                # Убираем фон – теперь он прозрачный
+                PieChart:
+                    id: pie_chart
+                    size_hint: (1, 1)
 
-# Баланс
-# Прибыль за месяц
-# Уведомления(требования постоянных платежей за 3 дня по умолчанию  проходит)
-# История транзакций
-#     +- обычная транзакция(5 пунктов сумма и описание возможность раскрытия и пролистывания)
-#     +- постоянные переводы(уведомления 5пунктов сумма и описание возможность раскрытия и пролистывания)
-# Дата начала и конца по умолчанию последний месяц
-# График линейный прибыли и трат
-# Столбчатая диаграмма трат по категориям
+            # Разделитель
+            Widget:
+                size_hint_y: None
+                height: dp(10)
+
+            # ============================================================
+            # ГРАФИК 2: Линейный график (потом)
+            # ============================================================
+            Label:
+                text: 'График доходов и расходов'
+                bold: True
+                size_hint_y: None
+                height: dp(34)
+                font_size: sp(16)
+
+            BoxLayout:
+                size_hint_y: None
+                height: 300
+                # Убираем фон – теперь он прозрачный
+                ChartImage:
+                    id: line_chart
+                    size_hint: (1, 1)
+
+            # Отступ внизу
+            Widget:
+                size_hint_y: None
+                height: dp(30)

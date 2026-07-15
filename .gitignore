@@ -7,7 +7,12 @@ __pycache__/
 *.so
 
 *.db
+*.db.enc
 config.json
+bin/
+.buildozer/
+*.apk
+*.aab
 # Distribution / packaging
 .Python
 build/
