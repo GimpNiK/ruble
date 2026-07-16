@@ -142,3 +142,5 @@ android.libs_debug = True
 
 # (bool) Показывать детали упаковки
 android.packaging_debug = True
+
+ignore_python_version = True
