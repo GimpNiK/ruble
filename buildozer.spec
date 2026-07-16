@@ -35,7 +35,7 @@ icon.filename = %(source.dir)s/icons/icon.png
 # ============================================
 
 # (list) Application requirements
-requirements = python3==3.10.0,hostpython3==3.10.0,kivy==2.3.0,sqlalchemy==2.0.23,cryptography==41.0.7,typing_extensions==4.12.2
+requirements = python3==3.10.0,hostpython3==3.10.0,kivy==2.3.1,sqlalchemy==2.0.23,cryptography==41.0.7,typing_extensions==4.12.2
 
 # ============================================
 # НАСТРОЙКИ ANDROID
