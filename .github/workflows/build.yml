@@ -13,6 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Устанавливаем Java 17 (обязательно!)
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       # Устанавливаем Python 3.10
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
@@ -26,7 +33,6 @@ jobs:
           sudo apt-get install -y \
             git zip unzip \
             python3 python3-pip python3-dev \
-            openjdk-17-jdk \
             autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 \
             cmake libffi-dev libssl-dev
