@@ -77,7 +77,7 @@ android.accept_sdk_license = True
 android.release = False
 
 # (bool) Android Gradle
-android.gradle_dependencies = True
+# android.gradle_dependencies = True
 
 # (str) Android gradle version
 android.gradle_version = 8.4.0
@@ -111,37 +111,37 @@ android.verbose_commands = True
 android.debug = True
 
 # (bool) Показывать детали сборки NDK
-android.ndk_debug = True
+#android.ndk_debug = True
 
 # (bool) Показывать детали сборки SDK
-android.sdk_debug = True
+#android.sdk_debug = True
 
 # (bool) Показывать процесс компиляции Python
-android.python_debug = True
+#android.python_debug = True
 
 # (str) Дополнительные флаги для компиляции
 android.extra_compile_args = -v -Wall
 
 # (bool) Показывать процесс упаковки APK
-android.apk_debug = True
+#android.apk_debug = True
 
 # (bool) Сохранять промежуточные файлы
 android.keep_build = True
 
 # (bool) Показывать процесс подписи APK
-android.sign_debug = True
+#android.sign_debug = True
 
 # (bool) Показывать детали сборки ресурсов
-android.resources_debug = True
+#android.resources_debug = True
 
 # (bool) Показывать детали сборки Python
-android.python_verbose = True
+#android.python_verbose = True
 
 # (bool) Показывать детали сборки библиотек
-android.libs_debug = True
+#android.libs_debug = True
 
 # (bool) Показывать детали упаковки
 android.packaging_debug = True
 # Отключаем зависимость Gradle
-android.gradle_dependencies = False
+#android.gradle_dependencies = False
 ignore_python_version = True
