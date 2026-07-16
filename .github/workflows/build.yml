@@ -2,32 +2,55 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ]  # Сборка будет запускаться при пуше в главную ветку
-  workflow_dispatch:    # Позволяет запустить сборку вручную из интерфейса GitHub
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04  # Используем Ubuntu для сборки [citation:1][citation:4]
+    runs-on: ubuntu-22.04
 
     steps:
-      # 1. Клонируем код вашего репозитория
+      # 1. Клонируем код репозитория
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Запускаем сборку с помощью Buildozer
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          # Указываем команду для сборки debug-версии
-          command: buildozer android debug
-          # Если ваш buildozer.spec лежит не в корне, укажите папку здесь
-          # workdir: ./your_app_folder
-          buildozer_version: stable # Используем стабильную версию Buildozer
+      # 2. Устанавливаем зависимости для Buildozer
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git \
+            zip \
+            unzip \
+            python3 \
+            python3-pip \
+            python3-dev \
+            openjdk-17-jdk \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo5 \
+            cmake \
+            libffi-dev \
+            libssl-dev
 
-      # 3. Загружаем готовый APK как артефакт сборки
-      - name: Upload artifacts
+      # 3. Устанавливаем Buildozer
+      - name: Install Buildozer
+        run: |
+          pip3 install --upgrade pip
+          pip3 install buildozer cython
+
+      # 4. Собираем APK
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      # 5. Загружаем APK как артефакт
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: ruble-app  # Имя, под которым будет скачан архив
-          path: ${{ steps.buildozer.outputs.filename }} # Путь к файлу из вывода Buildozer [citation:4][citation:5][citation:6]
+          name: ruble-app
+          path: bin/*.apk
