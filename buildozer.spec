@@ -142,5 +142,6 @@ android.libs_debug = True
 
 # (bool) Показывать детали упаковки
 android.packaging_debug = True
-
+# Отключаем зависимость Gradle
+android.gradle_dependencies = False
 ignore_python_version = True
