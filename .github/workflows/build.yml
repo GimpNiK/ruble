@@ -1,0 +1,33 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]  # Сборка будет запускаться при пуше в главную ветку
+  workflow_dispatch:    # Позволяет запустить сборку вручную из интерфейса GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04  # Используем Ubuntu для сборки [citation:1][citation:4]
+
+    steps:
+      # 1. Клонируем код вашего репозитория
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Запускаем сборку с помощью Buildozer
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          # Указываем команду для сборки debug-версии
+          command: buildozer android debug
+          # Если ваш buildozer.spec лежит не в корне, укажите папку здесь
+          # workdir: ./your_app_folder
+          buildozer_version: stable # Используем стабильную версию Buildozer
+
+      # 3. Загружаем готовый APK как артефакт сборки
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruble-app  # Имя, под которым будет скачан архив
+          path: ${{ steps.buildozer.outputs.filename }} # Путь к файлу из вывода Buildozer [citation:4][citation:5][citation:6]

@@ -1,0 +1,18 @@
+FROM kivy/buildozer:latest
+
+# Очищаем глобальный кэш Buildozer
+RUN rm -rf /root/.buildozer
+
+# Очищаем локальный кэш проекта (если есть)
+RUN rm -rf /home/user/app/.buildozer
+
+# Очищаем папку с собранными APK
+RUN rm -rf /home/user/app/bin/*.apk
+
+# Очищаем кэш pip
+RUN rm -rf /root/.cache/pip
+
+# Очищаем временные файлы
+RUN rm -rf /tmp/*
+
+CMD ["echo", "Кэш Buildozer полностью очищен!"]

@@ -15,8 +15,25 @@ services:
       - JAVA_OPTS=-Xmx8g
       - BUILDOZER_ALLOW_ROOT=1
     command: -v android debug --log-level=4 --parallel-build=8
+    stdin_open: true      # <-- ЭТО ВАЖНО
+    tty: true             # <-- ЭТО ВАЖНО
+    profiles:
+      - build
+
+  # Сервис для очистки кэша
+  clean:
+    image: kivy/buildozer:latest
+    container_name: ruble_cleaner
+    volumes:
+      - buildozer-cache:/home/user/.buildozer
+      - .:/home/user/hostcwd
+    environment:
+      - BUILDOZER_ALLOW_ROOT=1
+    command: distclean
     stdin_open: true
     tty: true
+    profiles:
+      - clean
 
   # Сервис для тестирования (опционально)
   test:
