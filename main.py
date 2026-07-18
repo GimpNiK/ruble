@@ -333,10 +333,11 @@ class TransactionScreen(BaseFormScreen):
         self.build_form()
 
     def build_form(self):
-        # Родительский layout – будет иметь фиксированную высоту
         layout = BoxLayout(orientation='vertical', spacing=0, padding=0)
-        layout.size_hint_y = None  # отключаем растяжение
-
+        layout.size_hint_y = None
+        layout.height = dp(360)  # фиксированная высота формы
+        layout.pos_hint = {'top': 1}  # ПРИЖИМАЕМ К ВЕРХУ
+        
         # Заголовок
         title_layout = BoxLayout(size_hint_y=None, height=dp(34), padding=[dp(12), dp(4)])
         with title_layout.canvas.before:
@@ -347,13 +348,13 @@ class TransactionScreen(BaseFormScreen):
         title_layout.add_widget(title_label)
         layout.add_widget(title_layout)
 
-        # Контейнер с фиксированной высотой
-        content = BoxLayout(orientation='vertical', padding=[dp(12), dp(4), dp(12), dp(4)], spacing=dp(4))
+        # Контент
+        content = BoxLayout(orientation='vertical', padding=[dp(12), dp(6), dp(12), dp(6)], spacing=dp(4))
         content.size_hint_y = None
+        content.height = dp(300)
 
-        # Блок полей
         fields_box = BoxLayout(orientation='vertical', spacing=dp(4), size_hint_y=None)
-        fields_box.height = dp(276)   # 5 полей
+        fields_box.height = dp(240)
 
         self.date_input = TextInput(text=datetime.now().strftime("%d.%m.%Y"), multiline=False,
                                     size_hint_y=None, height=dp(32), font_size=sp(13))
@@ -381,7 +382,6 @@ class TransactionScreen(BaseFormScreen):
 
         content.add_widget(fields_box)
 
-        # Кнопки
         buttons = BoxLayout(size_hint_y=None, height=dp(40), spacing=dp(8), padding=[dp(6), dp(2)])
         btn_cancel = Button(text="Отмена", on_press=lambda *_: self.go_back(),
                             background_color=[0.7,0.3,0.3,1], size_hint_x=0.4, font_size=sp(13))
@@ -391,7 +391,6 @@ class TransactionScreen(BaseFormScreen):
         buttons.add_widget(btn_save)
         content.add_widget(buttons)
 
-        # Вычисляем высоту content
         content_height = (fields_box.height + buttons.height +
                           content.padding[1] + content.padding[3] +
                           content.spacing)
@@ -399,7 +398,7 @@ class TransactionScreen(BaseFormScreen):
 
         layout.add_widget(content)
 
-        # Вычисляем общую высоту layout (заголовок + content + маленький запас)
+        # Общая высота
         layout.height = title_layout.height + content.height + dp(6)
 
         self.add_widget(layout)
