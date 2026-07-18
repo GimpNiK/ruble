@@ -1,46 +1,47 @@
 # Глобальные стили приложения Ruble
 
 <Button>:
-    font_size: sp(15)
+    font_size: sp(12)
     background_normal: ''
     background_color: 0.25, 0.55, 0.85, 1
     color: 1, 1, 1, 1
     size_hint_y: None
-    height: dp(44)
+    height: dp(36)
     canvas.before:
         Color:
             rgba: self.background_color
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(8)]
+            radius: [dp(6)]
 
 <Label>:
-    font_size: sp(14)
-    color: 0.15, 0.15, 0.15, 1
-    halign: 'left'
+    font_size: sp(11)
+    color: 0, 0, 0, 1
+    halign: 'center'
     valign: 'middle'
+    text_size: self.width, self.height
 
 <TextInput>:
-    font_size: sp(15)
-    background_color: 1, 1, 1, 1
-    foreground_color: 0.1, 0.1, 0.1, 1
-    padding: dp(10), dp(10)
+    font_size: sp(12)
+    background_color: 0.92, 0.96, 1, 1      # светло-голубой фон (было белый)
+    foreground_color: 0, 0, 0, 1
+    padding: dp(6), dp(6)
     multiline: False
     size_hint_y: None
-    height: dp(44)
+    height: dp(34)
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 1
+            rgba: self.background_color
         RoundedRectangle:
             pos: self.pos
             size: self.size
-            radius: [dp(6)]
+            radius: [dp(5)]
         Color:
-            rgba: 0.8, 0.8, 0.8, 0.5
+            rgba: 0.3, 0.3, 0.3, 0.8       # более тёмная и контрастная рамка
         Line:
             rectangle: self.x, self.y, self.width, self.height
-            width: 1
+            width: 1.5                      # чуть толще для лучшей видимости
 
 <Screen>:
     canvas.before:
@@ -49,6 +50,8 @@
         Rectangle:
             pos: self.pos
             size: self.size
+    padding: 0
+    spacing: 0
 
 <BoxLayout>:
     canvas.before:
@@ -57,3 +60,10 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
+<ScrollView>:
+    bar_width: dp(3)
+    bar_color: 0.3, 0.5, 0.8, 0.3
+    bar_inactive_color: 0.3, 0.5, 0.8, 0.1
+    padding: 0
+    spacing: 0

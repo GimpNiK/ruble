@@ -20,6 +20,8 @@ from sqlalchemy import (
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
+from notify import send_notification
+
 Base = declarative_base()
 
 DEFAULT_CATEGORIES = [
@@ -373,6 +375,10 @@ def process_due_regular_transactions():
                 db.add(notification)
                 
                 db.commit()
+                send_notification(
+                    f"Платёж {regular.name}",
+                    f"{sign} {regular.sum:.2f} ₽ на {due_date.strftime('%d.%m.%Y')}"
+                )
                 print(f" Авто-транзакция создана: {regular.name} на {due_date}")
 
 
@@ -404,6 +410,10 @@ def sync_payment_notifications():
                             regular_transaction_id=regular.id,
                         )
                     )
+                    send_notification(
+                    f"Напоминание: {regular.name}",
+                    f"{sign} {regular.sum:.2f} ₽. Срок {due.strftime('%d.%m.%Y')}"
+                )
     db.commit()
 
 

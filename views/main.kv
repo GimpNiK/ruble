@@ -5,94 +5,74 @@
 <ListItem@BoxLayout>:
     orientation: 'horizontal'
     size_hint_y: None
-    height: dp(50)
+    height: dp(34)                  # было 28, увеличено
     spacing: dp(4)
     padding: dp(4), dp(2)
     Label:
         id: date_label
         size_hint_x: 0.22
-        font_size: sp(13)
+        font_size: sp(10)
         text_size: self.size
         halign: 'left'
         valign: 'middle'
+        color: 0, 0, 0, 1
     Label:
         id: sum_label
         size_hint_x: 0.22
-        font_size: sp(13)
+        font_size: sp(10)
         bold: True
         text_size: self.size
         halign: 'left'
         valign: 'middle'
+        color: 0, 0, 0, 1
     Label:
         id: descr_label
         size_hint_x: 0.46
-        font_size: sp(13)
+        font_size: sp(10)
         text_size: self.size
         halign: 'left'
         valign: 'middle'
         shorten: True
         shorten_from: 'right'
+        color: 0, 0, 0, 1
     Button:
         id: delete_btn
         size_hint_x: 0.1
-        text: 'Х'
-        font_size: sp(18)
-        background_color: 0.85, 0.25, 0.25, 1
-
-<GoalItem@BoxLayout>:
-    orientation: 'vertical'
-    size_hint_y: None
-    height: dp(70)
-    padding: dp(8)
-    spacing: dp(2)
-    canvas.before:
-        Color:
-            rgba: 0.95, 0.95, 0.95, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    Label:
-        id: name_label
-        font_size: sp(15)
-        bold: True
-        size_hint_y: None
-        height: dp(22)
-    Label:
-        id: progress_label
-        font_size: sp(13)
-        size_hint_y: None
-        height: dp(20)
-    Label:
-        id: deadline_label
+        text: 'X'
         font_size: sp(12)
-        color: 0.4, 0.4, 0.4, 1
+        background_color: 0.85, 0.25, 0.25, 1
+        height: dp(26)              # увеличено
         size_hint_y: None
-        height: dp(18)
 
 <MainScreen@Screen>:
     name: 'MainScreen'
+    padding: 0
+    spacing: 0
     ScrollView:
         do_scroll_x: False
+        padding: 0
+        spacing: 0
         BoxLayout:
+            id: scroll_content
             orientation: 'vertical'
             size_hint_y: None
-            height: self.minimum_height
-            padding: dp(16)
-            spacing: dp(12)
+            height: 1000            # будет пересчитано
+            padding: [dp(6), dp(4), dp(6), dp(6)]   # изменено – добавили отступы
+            spacing: dp(6)          # изменено – увеличили расстояние между блоками
 
             Label:
-                text: 'Ruble — учёт личных финансов'
-                font_size: sp(24)
+                text: 'Ruble'
+                font_size: sp(18)   # немного увеличено
                 bold: True
                 size_hint_y: None
-                height: dp(44)
+                height: dp(30)      # увеличено
                 color: 0.15, 0.35, 0.65, 1
 
             BoxLayout:
                 size_hint_y: None
-                height: dp(50)
-                spacing: dp(10)
-                padding: dp(8)
+                height: dp(36)      # увеличено
+                spacing: dp(6)
+                padding: dp(6)
                 canvas.before:
                     Color:
                         rgba: 0.9, 0.95, 1, 1
@@ -102,224 +82,208 @@
                 Label:
                     text: 'Баланс:'
                     bold: True
-                    font_size: sp(16)
+                    font_size: sp(12)
+                    color: 0, 0, 0, 1
                 Label:
                     id: balance
                     bold: True
-                    font_size: sp(16)
+                    font_size: sp(12)
                     color: 0.1, 0.5, 0.2, 1
 
             BoxLayout:
                 size_hint_y: None
-                height: dp(44)
-                spacing: dp(10)
+                height: dp(28)      # увеличено
+                spacing: dp(4)
                 padding: dp(4)
                 Label:
                     text: 'Прибыль за месяц:'
-                    font_size: sp(15)
+                    font_size: sp(11)
+                    color: 0, 0, 0, 1
                 Label:
                     id: monthly_profit
-                    font_size: sp(15)
+                    font_size: sp(11)
+                    color: 0, 0, 0, 1
 
+            # --- Напоминания ---
             Label:
-                text: 'Напоминания о платежах'
+                text: 'Напоминания'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
+                height: dp(22)      # увеличено
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 id: notifications
                 orientation: 'vertical'
                 size_hint_y: None
-                height: self.minimum_height
+                height: dp(140)     # увеличено
 
+            # --- Транзакции ---
             Label:
-                text: 'История транзакций'
+                text: 'Транзакции'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: dp(48)
-                spacing: dp(10)
+                height: dp(34)      # увеличено
+                spacing: dp(6)
                 padding: dp(4)
                 Button:
-                    text: '+ Транзакция'
-                    font_size: sp(15)
+                    text: '+ Добавить'
+                    font_size: sp(10)
                     size_hint_x: 0.35
-                    on_press: root.open_transaction_popup()
+                    on_press: root.go_to_transaction()
                 Button:
                     text: '<'
-                    font_size: sp(20)
+                    font_size: sp(14)
                     size_hint_x: None
-                    width: dp(50)
+                    width: dp(36)   # увеличено
                     on_press: root.load_transactions(-1)
                 Label:
                     id: tx_page_label
                     text: '0 из 0'
-                    font_size: sp(14)
+                    font_size: sp(10)
                     size_hint_x: 0.4
+                    color: 0, 0, 0, 1
                 Button:
                     text: '>'
-                    font_size: sp(20)
+                    font_size: sp(14)
                     size_hint_x: None
-                    width: dp(50)
+                    width: dp(36)
                     on_press: root.load_transactions(1)
             BoxLayout:
                 id: transactions
                 orientation: 'vertical'
                 size_hint_y: None
-                height: self.minimum_height
+                height: dp(140)
 
+            # --- Постоянные платежи ---
             Label:
                 text: 'Постоянные платежи'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: dp(48)
-                spacing: dp(10)
+                height: dp(34)
+                spacing: dp(6)
                 padding: dp(4)
                 Button:
-                    text: '+ Постоянный платёж'
-                    font_size: sp(15)
+                    text: '+ Добавить'
+                    font_size: sp(10)
                     size_hint_x: 0.35
-                    on_press: root.open_regular_popup()
+                    on_press: root.go_to_regular()
                 Button:
                     text: '<'
-                    font_size: sp(20)
+                    font_size: sp(14)
                     size_hint_x: None
-                    width: dp(50)
+                    width: dp(36)
                     on_press: root.load_regular_transactions(-1)
                 Label:
                     id: reg_page_label
                     text: '0 из 0'
-                    font_size: sp(14)
+                    font_size: sp(10)
                     size_hint_x: 0.4
+                    color: 0, 0, 0, 1
                 Button:
                     text: '>'
-                    font_size: sp(20)
+                    font_size: sp(14)
                     size_hint_x: None
-                    width: dp(50)
+                    width: dp(36)
                     on_press: root.load_regular_transactions(1)
             BoxLayout:
                 id: regular_transactions
                 orientation: 'vertical'
                 size_hint_y: None
-                height: self.minimum_height
+                height: dp(140)
 
-            # Label:
-            #     text: 'Финансовые цели'
-            #     bold: True
-            #     size_hint_y: None
-            #     height: dp(34)
-            #     font_size: sp(16)
-            # Button:
-            #     text: '+ Цель'
-            #     font_size: sp(15)
-            #     size_hint_y: None
-            #     height: dp(44)
-            #     on_press: root.open_goal_popup()
-            # BoxLayout:
-            #     id: goals
-            #     orientation: 'vertical'
-            #     size_hint_y: None
-            #     height: self.minimum_height
-
+            # --- Период ---
             Label:
-                text: 'Период анализа'
+                text: 'Период'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: dp(48)
-                spacing: dp(8)
+                height: dp(32)      # увеличено
+                spacing: dp(4)
                 padding: dp(4)
                 Label:
                     text: 'С:'
-                    font_size: sp(15)
+                    font_size: sp(10)
                     size_hint_x: None
-                    width: dp(30)
+                    width: dp(22)   # увеличено
+                    color: 0, 0, 0, 1
                 TextInput:
                     id: start_date_input
                     multiline: False
                     hint_text: 'ДД.ММ.ГГГГ'
-                    font_size: sp(16)
-                    height: dp(40)
+                    font_size: sp(10)
+                    height: dp(28)
                     size_hint_y: None
                 Label:
                     text: 'По:'
-                    font_size: sp(15)
+                    font_size: sp(10)
                     size_hint_x: None
-                    width: dp(35)
+                    width: dp(24)
+                    color: 0, 0, 0, 1
                 TextInput:
                     id: end_date_input
                     multiline: False
                     hint_text: 'ДД.ММ.ГГГГ'
-                    font_size: sp(16)
-                    height: dp(40)
+                    font_size: sp(10)
+                    height: dp(28)
                     size_hint_y: None
             BoxLayout:
                 size_hint_y: None
-                height: dp(44)
-                spacing: dp(10)
+                height: dp(32)      # увеличено
+                spacing: dp(6)
                 padding: dp(4)
                 Button:
                     text: 'Применить'
-                    font_size: sp(15)
+                    font_size: sp(10)
                     on_press: root.apply_period()
                 Button:
                     text: 'Последний месяц'
-                    font_size: sp(15)
+                    font_size: sp(10)
                     on_press: root.reset_period()
 
-            # ============================================================
-            # ГРАФИК 1: Круговая диаграмма (сначала)
-            # ============================================================
+            # --- Графики ---
             Label:
                 text: 'Расходы по категориям'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
-
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: 300
-                # Убираем фон – теперь он прозрачный
+                height: 180
                 PieChart:
                     id: pie_chart
                     size_hint: (1, 1)
 
-            # Разделитель
-            Widget:
-                size_hint_y: None
-                height: dp(10)
-
-            # ============================================================
-            # ГРАФИК 2: Линейный график (потом)
-            # ============================================================
             Label:
                 text: 'График доходов и расходов'
                 bold: True
                 size_hint_y: None
-                height: dp(34)
-                font_size: sp(16)
-
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: 300
-                # Убираем фон – теперь он прозрачный
+                height: 180
                 ChartImage:
                     id: line_chart
                     size_hint: (1, 1)
 
-            # Отступ внизу
             Widget:
                 size_hint_y: None
-                height: dp(30)
+                height: dp(12)
