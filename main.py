@@ -326,17 +326,22 @@ class BaseFormScreen(Screen):
         self.manager.current = "MainScreen"
 
 
-# ---------- Экран добавления транзакции (исправлен отступ сверху) ----------
+# ---------- Экран добавления транзакции (отложенное создание формы) ----------
 class TransactionScreen(BaseFormScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.build_form()
+        self.form_built = False
+
+    def on_enter(self):
+        if not self.form_built:
+            self.build_form()
+            self.form_built = True
 
     def build_form(self):
         layout = BoxLayout(orientation='vertical', spacing=0, padding=0)
         layout.size_hint_y = None
-        layout.height = dp(360)  # фиксированная высота формы
-        layout.pos_hint = {'top': 1}  # ПРИЖИМАЕМ К ВЕРХУ
+        layout.height = dp(360)
+        layout.pos_hint = {'top': 1}
         
         # Заголовок
         title_layout = BoxLayout(size_hint_y=None, height=dp(34), padding=[dp(12), dp(4)])
@@ -397,8 +402,6 @@ class TransactionScreen(BaseFormScreen):
         content.height = content_height
 
         layout.add_widget(content)
-
-        # Общая высота
         layout.height = title_layout.height + content.height + dp(6)
 
         self.add_widget(layout)
@@ -431,12 +434,19 @@ class TransactionScreen(BaseFormScreen):
             main_screen.refresh_all()
 
 
-# ---------- Экран постоянного платежа (исправлен обрез сверху) ----------
+# ---------- Экран постоянного платежа (отложенное создание формы) ----------
 class RegularScreen(BaseFormScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.form_built = False
         self.scroll = None
-        self.build_form()
+
+    def on_enter(self):
+        if not self.form_built:
+            self.build_form()
+            self.form_built = True
+        if self.scroll:
+            Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 1), 0.2)
 
     def build_form(self):
         layout = BoxLayout(orientation='vertical', spacing=0, padding=0)
@@ -450,7 +460,6 @@ class RegularScreen(BaseFormScreen):
         title_layout.add_widget(title_label)
         layout.add_widget(title_layout)
 
-        # Исправлено: увеличен верхний отступ, чтобы подпись "Название" была видна
         content = BoxLayout(orientation='vertical', padding=[dp(12), dp(6), dp(12), dp(4)], spacing=dp(4))
         scroll = ScrollView(size_hint=(1,1), do_scroll_x=False, bar_width=dp(3))
         scroll.bar_color = [0.2,0.5,0.8,0.3]
@@ -458,7 +467,6 @@ class RegularScreen(BaseFormScreen):
         self.scroll = scroll
 
         fields_box = BoxLayout(orientation='vertical', spacing=dp(4), size_hint_y=None)
-        # Увеличена высота для комфортного размещения всех полей
         fields_box.height = dp(500)
 
         self.name_input = TextInput(text="", multiline=False, size_hint_y=None, height=dp(32), font_size=sp(13))
@@ -513,10 +521,6 @@ class RegularScreen(BaseFormScreen):
         self.add_widget(layout)
         self._on_period_change(None, self.period_spinner.text)
 
-    def on_enter(self):
-        if self.scroll:
-            Clock.schedule_once(lambda dt: setattr(self.scroll, 'scroll_y', 1), 0.2)
-
     def _on_type_change(self, spinner, value):
         ttype = TransactionType.INCOME if value == "Доход" else TransactionType.EXPENSE
         self.cat_spinner.values = _category_spinner_values(ttype)
@@ -562,11 +566,17 @@ class RegularScreen(BaseFormScreen):
         if main_screen:
             main_screen.refresh_all()
 
-# ---------- Экран финансовой цели (исправлен отступ сверху) ----------
+
+# ---------- Экран финансовой цели (отложенное создание формы) ----------
 class GoalScreen(BaseFormScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.build_form()
+        self.form_built = False
+
+    def on_enter(self):
+        if not self.form_built:
+            self.build_form()
+            self.form_built = True
 
     def build_form(self):
         layout = BoxLayout(orientation='vertical', spacing=0, padding=0)
@@ -581,6 +591,9 @@ class GoalScreen(BaseFormScreen):
         layout.add_widget(title_layout)
 
         content = BoxLayout(orientation='vertical', padding=[dp(12), dp(2), dp(12), dp(6)], spacing=dp(4))
+        content.size_hint_y = None
+        content.height = dp(280)
+
         fields_box = BoxLayout(orientation='vertical', spacing=dp(4), size_hint_y=None)
         fields_box.height = dp(220)
 
@@ -614,7 +627,15 @@ class GoalScreen(BaseFormScreen):
         buttons.add_widget(btn_save)
         content.add_widget(buttons)
 
+        content_height = (fields_box.height + buttons.height +
+                          content.padding[1] + content.padding[3] +
+                          content.spacing)
+        content.height = content_height
+
         layout.add_widget(content)
+        layout.size_hint_y = None
+        layout.height = title_layout.height + content.height + dp(6)
+
         self.add_widget(layout)
 
     def save(self, *_):
