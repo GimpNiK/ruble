@@ -1,11 +1,10 @@
 #:kivy 2.3.1
-#:import ChartImage charts.ChartImage
 #:import PieChart charts.PieChart
 
 <ListItem@BoxLayout>:
     orientation: 'horizontal'
     size_hint_y: None
-    height: dp(34)                  # было 28, увеличено
+    height: dp(34)
     spacing: dp(4)
     padding: dp(4), dp(2)
     Label:
@@ -41,7 +40,75 @@
         text: 'X'
         font_size: sp(12)
         background_color: 0.85, 0.25, 0.25, 1
-        height: dp(26)              # увеличено
+        height: dp(26)
+        size_hint_y: None
+
+<GoalListItem>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: dp(44)
+    spacing: dp(4)
+    padding: dp(4), dp(2)
+    canvas.before:
+        Color:
+            rgba: 0.95, 0.95, 0.98, 1
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: [dp(4)]
+    Label:
+        id: goal_name
+        size_hint_x: 0.25
+        font_size: sp(11)
+        text_size: self.size
+        halign: 'left'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+        shorten: True
+        shorten_from: 'right'
+    ProgressBar:
+        id: goal_bar
+        size_hint_x: 0.25
+        height: dp(10)
+        max: 100
+        value: 0
+        canvas.before:
+            Color:
+                rgba: 0.9, 0.9, 0.9, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+                radius: [dp(5)]
+        canvas.after:
+            Color:
+                rgba: 0.2, 0.6, 0.9, 1
+            RoundedRectangle:
+                pos: self.pos
+                size: (self.value / self.max) * self.width, self.height
+                radius: [dp(5)]
+    Label:
+        id: goal_progress
+        size_hint_x: 0.25
+        font_size: sp(10)
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+        color: 0, 0, 0, 1
+    Label:
+        id: goal_deadline
+        size_hint_x: 0.15
+        font_size: sp(9)
+        text_size: self.size
+        halign: 'center'
+        valign: 'middle'
+        color: 0.4, 0.4, 0.4, 1
+    Button:
+        id: delete_btn
+        size_hint_x: 0.1
+        text: 'X'
+        font_size: sp(12)
+        background_color: 0.85, 0.25, 0.25, 1
+        height: dp(30)
         size_hint_y: None
 
 <MainScreen@Screen>:
@@ -56,21 +123,21 @@
             id: scroll_content
             orientation: 'vertical'
             size_hint_y: None
-            height: 1000            # будет пересчитано
-            padding: [dp(6), dp(4), dp(6), dp(6)]   # изменено – добавили отступы
-            spacing: dp(6)          # изменено – увеличили расстояние между блоками
+            height: 1000
+            padding: [dp(6), dp(4), dp(6), dp(6)]
+            spacing: dp(6)
 
             Label:
                 text: 'Ruble'
-                font_size: sp(18)   # немного увеличено
+                font_size: sp(18)
                 bold: True
                 size_hint_y: None
-                height: dp(30)      # увеличено
+                height: dp(30)
                 color: 0.15, 0.35, 0.65, 1
 
             BoxLayout:
                 size_hint_y: None
-                height: dp(36)      # увеличено
+                height: dp(36)
                 spacing: dp(6)
                 padding: dp(6)
                 canvas.before:
@@ -92,7 +159,7 @@
 
             BoxLayout:
                 size_hint_y: None
-                height: dp(28)      # увеличено
+                height: dp(28)
                 spacing: dp(4)
                 padding: dp(4)
                 Label:
@@ -109,14 +176,14 @@
                 text: 'Напоминания'
                 bold: True
                 size_hint_y: None
-                height: dp(22)      # увеличено
+                height: dp(22)
                 font_size: sp(12)
                 color: 0, 0, 0, 1
             BoxLayout:
                 id: notifications
                 orientation: 'vertical'
                 size_hint_y: None
-                height: dp(140)     # увеличено
+                height: dp(140)
 
             # --- Транзакции ---
             Label:
@@ -128,7 +195,7 @@
                 color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: dp(34)      # увеличено
+                height: dp(34)
                 spacing: dp(6)
                 padding: dp(4)
                 Button:
@@ -140,7 +207,7 @@
                     text: '<'
                     font_size: sp(14)
                     size_hint_x: None
-                    width: dp(36)   # увеличено
+                    width: dp(36)
                     on_press: root.load_transactions(-1)
                 Label:
                     id: tx_page_label
@@ -202,6 +269,32 @@
                 size_hint_y: None
                 height: dp(140)
 
+            # --- Финансовые цели ---
+            Label:
+                text: 'Финансовые цели'
+                bold: True
+                size_hint_y: None
+                height: dp(22)
+                font_size: sp(12)
+                color: 0, 0, 0, 1
+            BoxLayout:
+                size_hint_y: None
+                height: dp(34)
+                spacing: dp(6)
+                padding: dp(4)
+                Button:
+                    text: '+ Добавить'
+                    font_size: sp(10)
+                    size_hint_x: 0.35
+                    on_press: root.go_to_goal()
+                Widget:
+                    size_hint_x: 0.65
+            BoxLayout:
+                id: goals_list
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(140)
+
             # --- Период ---
             Label:
                 text: 'Период'
@@ -212,14 +305,14 @@
                 color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: dp(32)      # увеличено
+                height: dp(32)
                 spacing: dp(4)
                 padding: dp(4)
                 Label:
                     text: 'С:'
                     font_size: sp(10)
                     size_hint_x: None
-                    width: dp(22)   # увеличено
+                    width: dp(22)
                     color: 0, 0, 0, 1
                 TextInput:
                     id: start_date_input
@@ -243,7 +336,7 @@
                     size_hint_y: None
             BoxLayout:
                 size_hint_y: None
-                height: dp(32)      # увеличено
+                height: dp(32)
                 spacing: dp(6)
                 padding: dp(4)
                 Button:
@@ -255,7 +348,7 @@
                     font_size: sp(10)
                     on_press: root.reset_period()
 
-            # --- Графики ---
+            # --- График (только круговая диаграмма) ---
             Label:
                 text: 'Расходы по категориям'
                 bold: True
@@ -265,23 +358,9 @@
                 color: 0, 0, 0, 1
             BoxLayout:
                 size_hint_y: None
-                height: 180
+                height: dp(300)
                 PieChart:
                     id: pie_chart
-                    size_hint: (1, 1)
-
-            Label:
-                text: 'График доходов и расходов'
-                bold: True
-                size_hint_y: None
-                height: dp(22)
-                font_size: sp(12)
-                color: 0, 0, 0, 1
-            BoxLayout:
-                size_hint_y: None
-                height: 180
-                ChartImage:
-                    id: line_chart
                     size_hint: (1, 1)
 
             Widget:

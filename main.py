@@ -11,8 +11,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner
 from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.progressbar import ProgressBar
 
-from charts import ChartImage, PieChart
+from charts import PieChart
 from notify import init_notifications
 from crypto_utils import decrypt_database, encrypt_database, remove_plain_database
 from models import (
@@ -33,12 +34,12 @@ from models import (
     get_categories,
     get_daily_totals,
     get_expenses_by_category,
+    get_financial_goals,
     get_monthly_profit,
     get_transactions,
     is_registered,
     set_password,
     sync_payment_notifications,
-    process_due_regular_transactions,
     db,
 )
 
@@ -99,6 +100,25 @@ class ListItem(BoxLayout):
         self.ids.delete_btn.bind(on_press=lambda *_: on_delete(self.item_id))
 
 
+class GoalListItem(BoxLayout):
+    goal_id = None
+
+    def setup(self, goal_id, name, current, target, deadline, on_delete):
+        self.goal_id = goal_id
+        self.ids.goal_name.text = name
+        self.ids.goal_progress.text = f"{current:.2f} / {target:.2f} ₽"
+        if target > 0:
+            percent = min(current / target, 1.0)
+        else:
+            percent = 0
+        self.ids.goal_bar.value = percent * 100
+        if deadline:
+            self.ids.goal_deadline.text = f"до {deadline.strftime('%d.%m.%Y')}"
+        else:
+            self.ids.goal_deadline.text = "без срока"
+        self.ids.delete_btn.bind(on_press=lambda *_: on_delete(self.goal_id))
+
+
 class MainScreen(Screen):
     page_size = 5
     tx_offset = 0
@@ -128,6 +148,7 @@ class MainScreen(Screen):
         self.load_notifications()
         self.load_transactions()
         self.load_regular_transactions()
+        self.load_goals()
         self.update_charts(start, end)
         self.update_list_heights()
         self.update_scroll_height()
@@ -170,7 +191,8 @@ class MainScreen(Screen):
         content.height = max(total_height, 600)
 
     def update_list_heights(self):
-        for container in (self.ids['notifications'], self.ids['transactions'], self.ids['regular_transactions']):
+        for container in (self.ids['notifications'], self.ids['transactions'], 
+                          self.ids['regular_transactions'], self.ids['goals_list']):
             if container.children:
                 count = len(container.children)
                 height = count * dp(34) + (count - 1) * dp(4) + dp(8)
@@ -277,10 +299,25 @@ class MainScreen(Screen):
         self.update_list_heights()
         self.update_scroll_height()
 
-    def update_charts(self, start, end):
-        labels, income, expense = get_daily_totals(start, end)
-        self.ids['line_chart'].render_line_chart(labels, income, expense)
+    def load_goals(self):
+        self.ids['goals_list'].clear_widgets()
+        goals = get_financial_goals()
+        for goal in goals:
+            item = GoalListItem()
+            item.setup(
+                goal.id,
+                goal.name,
+                goal.current_sum,
+                goal.target_sum,
+                goal.deadline,
+                self.delete_goal,
+            )
+            self.ids['goals_list'].add_widget(item)
+        self.update_list_heights()
+        self.update_scroll_height()
 
+    def update_charts(self, start, end):
+        # Только круговая диаграмма (линейный график удалён)
         data = get_expenses_by_category(start, end)
         if not data:
             categories, values = ["Нет данных"], [0]
@@ -309,6 +346,11 @@ class MainScreen(Screen):
         delete_by_model(RegularTransaction, item_id)
         sync_payment_notifications()
         self.refresh_all()
+
+    def delete_goal(self, goal_id):
+        delete_by_model(FinancialGoal, goal_id)
+        self.load_goals()
+        self.update_scroll_height()
 
     def go_to_transaction(self):
         self.manager.current = "TransactionScreen"
@@ -706,7 +748,6 @@ class AuthScreen(Screen):
 # ---------- Приложение ----------
 class MainApp(App):
     _pin = None
-    _check_event = None
 
     def build(self):
         Clock.max_iteration = 50
@@ -719,32 +760,12 @@ class MainApp(App):
         sm.add_widget(RegularScreen(name="RegularScreen"))
         sm.add_widget(GoalScreen(name="GoalScreen"))
         sm.current = "LoginScreen" if is_registered() else "AuthScreen"
-        self.schedule_regular_checks()
         return sm
-
-    def schedule_regular_checks(self):
-        self.check_regular_transactions()
-        self._check_event = Clock.schedule_interval(
-            lambda dt: self.check_regular_transactions(),
-            60
-        )
-
-    def check_regular_transactions(self):
-        if self._pin:
-            try:
-                if not db.is_active:
-                    db.begin()
-                process_due_regular_transactions()
-            except Exception as e:
-                print(f"Ошибка при проверке платежей: {e}")
-                db.rollback()
 
     def unlock(self, pin: str):
         self._pin = pin
 
     def on_stop(self):
-        if self._check_event:
-            self._check_event.cancel()
         if self._pin:
             try:
                 db.commit()

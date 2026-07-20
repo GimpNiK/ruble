@@ -15,7 +15,7 @@ from sqlalchemy import (
     String,
     Text,
     create_engine,
-    func,  # <--- ДОБАВЛЕНО
+    func,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -183,17 +183,6 @@ class RegularTransaction(Base):
                 due = due.replace(year=due.year + 1)
         return due
 
-    def create_transaction(self):
-        transaction = Transaction(
-            name=self.name,
-            sum=self.sum,
-            date=datetime.now(),
-            category_id=self.category_id,
-            transaction_type=self.transaction_type,
-        )
-        db.add(transaction)
-        db.commit()
-
 
 class Notification(Base):
     __tablename__ = "notifications"
@@ -329,66 +318,12 @@ def get_daily_totals(start: datetime, end: datetime) -> tuple[list[str], list[fl
     return days, income_vals, expense_vals
 
 
-# ============================================================
-# НОВАЯ ФУНКЦИЯ ДЛЯ АВТО-СОЗДАНИЯ ТРАНЗАКЦИЙ
-# ============================================================
-def process_due_regular_transactions():
-    """
-    Проверяет все активные постоянные платежи.
-    Если сегодня или в прошлом есть необработанные даты,
-    создаёт транзакции и уведомления.
-    """
-    today = datetime.now().date()
-    
-    for regular in db.query(RegularTransaction).filter(RegularTransaction.is_active == 1).all():
-        due_date = regular.next_due_date().date()
-        
-        # Если дата платежа <= сегодня
-        if due_date <= today:
-            # Проверяем, не создавали ли уже транзакцию на эту дату
-            existing = db.query(Transaction).filter(
-                Transaction.name == regular.name,
-                func.date(Transaction.date) == due_date,
-                Transaction.sum == regular.sum,
-                Transaction.transaction_type == regular.transaction_type
-            ).first()
-            
-            if not existing:
-                # Создаём транзакцию
-                transaction = Transaction(
-                    name=f"{regular.name} (авто)",
-                    sum=regular.sum,
-                    date=datetime.combine(due_date, datetime.min.time()),
-                    category_id=regular.category_id,
-                    transaction_type=regular.transaction_type,
-                )
-                db.add(transaction)
-                
-                # Создаём уведомление
-                sign = "+" if regular.transaction_type == TransactionType.INCOME else "-"
-                notification = Notification(
-                    date=datetime.combine(due_date, datetime.min.time()),
-                    sum=regular.sum,
-                    descr=f"{sign} {regular.name or 'Платёж'} — авто",
-                    regular_transaction_id=regular.id,
-                )
-                db.add(notification)
-                
-                db.commit()
-                send_notification(
-                    f"Платёж {regular.name}",
-                    f"{sign} {regular.sum:.2f} ₽ на {due_date.strftime('%d.%m.%Y')}"
-                )
-                print(f" Авто-транзакция создана: {regular.name} на {due_date}")
-
-
 def sync_payment_notifications():
     """Создаёт напоминания о постоянных платежах за N дней до срока."""
     today = datetime.now().date()
     for regular in db.query(RegularTransaction).filter(RegularTransaction.is_active == 1).all():
         due = regular.next_due_date().date()
         
-        # Создаём уведомление только если дата в будущем
         if due >= today:
             notify_from = due - timedelta(days=regular.notify_days or NOTIFY_DAYS_DEFAULT)
             if notify_from <= today:
@@ -411,9 +346,9 @@ def sync_payment_notifications():
                         )
                     )
                     send_notification(
-                    f"Напоминание: {regular.name}",
-                    f"{sign} {regular.sum:.2f} ₽. Срок {due.strftime('%d.%m.%Y')}"
-                )
+                        f"Напоминание: {regular.name}",
+                        f"{sign} {regular.sum:.2f} ₽. Срок {due.strftime('%d.%m.%Y')}"
+                    )
     db.commit()
 
 
@@ -442,8 +377,6 @@ def add_regular_transaction(**kwargs):
     db.add(regular)
     db.commit()
     sync_payment_notifications()
-    # Сразу проверяем, не нужно ли создать транзакцию
-    process_due_regular_transactions()
     return regular
 
 
@@ -465,3 +398,8 @@ def delete_by_model(model, item_id):
     if item:
         db.delete(item)
         db.commit()
+
+
+def get_financial_goals():
+    """Возвращает все финансовые цели, отсортированные по дате создания (сначала новые)."""
+    return db.query(FinancialGoal).order_by(FinancialGoal.id.desc()).all()
