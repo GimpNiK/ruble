@@ -17,7 +17,7 @@ from sqlalchemy import (
     create_engine,
     func,
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 
 from notify import send_notification

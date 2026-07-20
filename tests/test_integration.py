@@ -4,9 +4,10 @@ import os
 from datetime import datetime, timedelta
 from unittest.mock import patch
 import warnings
-warnings.filterwarnings("ignore", category=ResourceWarning)
+# Подавление ResourceWarning для чистоты вывода
+warnings.simplefilter("ignore", ResourceWarning)
 
-
+# Добавляем путь к корню проекта
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine
@@ -33,8 +34,15 @@ class IntegrationTest(unittest.TestCase):
         self.mock_notify = self.notify_patcher.start()
 
     def tearDown(self):
+        # Откат возможных изменений
+        try:
+            self.session.rollback()
+        except:
+            pass
         self.notify_patcher.stop()
         self.session.close()
+        # Явно закрываем все соединения движка
+        self.engine.dispose()
         import models
         models.db = self._old_db
 

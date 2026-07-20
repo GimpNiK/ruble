@@ -3,8 +3,9 @@ import random
 from datetime import datetime, timedelta
 import os
 import tempfile
-import warnings
-warnings.filterwarnings("ignore", category=ResourceWarning)
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models import (
     Category, Transaction, TransactionType, add_transaction,

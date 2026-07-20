@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 from unittest.mock import patch
 import warnings
-warnings.filterwarnings("ignore", category=ResourceWarning)
+warnings.simplefilter("ignore", ResourceWarning)
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -15,6 +15,7 @@ from models import (
     Base, Category, Transaction, RegularTransaction, Notification, FinancialGoal,
     TransactionType, FormatPeriod,
     get_balance, get_monthly_profit, get_transactions, get_expenses_by_category,
+    get_daily_totals,  # добавлен прямой импорт
     add_transaction, add_regular_transaction, add_financial_goal,
     delete_by_model, sync_payment_notifications, get_financial_goals,
     get_categories, db
@@ -23,19 +24,22 @@ from models import (
 
 class TestModels(unittest.TestCase):
     def setUp(self):
-        # Создаём in-memory базу для каждого теста
         self.engine = create_engine('sqlite:///:memory:')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
-        # Сохраняем старый db и подменяем глобальный
         self._old_db = db
         import models
         models.db = self.session
         self._seed_categories()
 
     def tearDown(self):
+        try:
+            self.session.rollback()
+        except:
+            pass
         self.session.close()
+        self.engine.dispose()   # закрывает все соединения
         import models
         models.db = self._old_db
 
@@ -138,7 +142,6 @@ class TestModels(unittest.TestCase):
     def test_get_daily_totals(self):
         start = datetime.now() - timedelta(days=5)
         end = datetime.now()
-        from models import get_daily_totals
         days, incomes, expenses = get_daily_totals(start, end)
         self.assertEqual(len(days), 6)
         self.assertEqual(len(incomes), len(days))
