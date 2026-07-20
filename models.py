@@ -394,7 +394,7 @@ def add_financial_goal(name, target_sum, deadline=None, description="", current_
 
 
 def delete_by_model(model, item_id):
-    item = db.query(model).get(item_id)
+    item = db.get(model, item_id)
     if item:
         db.delete(item)
         db.commit()
