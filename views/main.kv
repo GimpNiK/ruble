@@ -66,26 +66,26 @@
         color: 0, 0, 0, 1
         shorten: True
         shorten_from: 'right'
-    ProgressBar:
-        id: goal_bar
-        size_hint_x: 0.25
-        height: dp(10)
-        max: 100
-        value: 0
-        canvas.before:
-            Color:
-                rgba: 0.9, 0.9, 0.9, 1
-            RoundedRectangle:
-                pos: self.pos
-                size: self.size
-                radius: [dp(5)]
-        canvas.after:
-            Color:
-                rgba: 0.2, 0.6, 0.9, 1
-            RoundedRectangle:
-                pos: self.pos
-                size: (self.value / self.max) * self.width, self.height
-                radius: [dp(5)]
+    # ProgressBar:
+    #     id: goal_bar
+    #     size_hint_x: 0.25
+    #     height: dp(10)
+    #     max: 100
+    #     value: 0
+    #     canvas.before:
+    #         Color:
+    #             rgba: 0.9, 0.9, 0.9, 1
+    #         RoundedRectangle:
+    #             pos: self.pos
+    #             size: self.size
+    #             radius: [dp(5)]
+    #     canvas.after:
+    #         Color:
+    #             rgba: 0.2, 0.6, 0.9, 1
+    #         RoundedRectangle:
+    #             pos: self.pos
+    #             size: (self.value / self.max) * self.width, self.height
+    #             radius: [dp(5)]
     Label:
         id: goal_progress
         size_hint_x: 0.25

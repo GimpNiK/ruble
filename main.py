@@ -107,11 +107,6 @@ class GoalListItem(BoxLayout):
         self.goal_id = goal_id
         self.ids.goal_name.text = name
         self.ids.goal_progress.text = f"{current:.2f} / {target:.2f} ₽"
-        if target > 0:
-            percent = min(current / target, 1.0)
-        else:
-            percent = 0
-        self.ids.goal_bar.value = percent * 100
         if deadline:
             self.ids.goal_deadline.text = f"до {deadline.strftime('%d.%m.%Y')}"
         else:
@@ -622,7 +617,7 @@ class GoalScreen(BaseFormScreen):
 
     def build_form(self):
         layout = BoxLayout(orientation='vertical', spacing=0, padding=0)
-
+        #layout.pos_hint = {'top': 1}
         title_layout = BoxLayout(size_hint_y=None, height=dp(34), padding=[dp(12), dp(4)])
         with title_layout.canvas.before:
             from kivy.graphics import Color, RoundedRectangle
